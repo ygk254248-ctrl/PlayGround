@@ -462,9 +462,10 @@ button:focus-visible {
 .bar { position: relative; height: 13px; margin-bottom: 5px; background: rgba(0, 0, 0, 0.56); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05); }
 .bar-fill { position: absolute; inset: 0; width: 100%; transform-origin: left center; transition: transform 160ms ease-out; }
 .hp-bar .bar-fill { background: linear-gradient(90deg, #9e3947, #df5968 55%, #f58983); box-shadow: 0 0 12px rgba(239, 100, 114, 0.24); }
-.aether-bar { height: 7px; }
+.aether-bar { height: 10px; }
+.aether-bar .bar-text { color: #eaf6ff; text-shadow: 0 1px 1px #000, 0 0 4px rgba(0,0,0,0.9); }
 .aether-bar .bar-fill { background: linear-gradient(90deg, #3e6fa7, #60a9e5 58%, #a9d9ff); box-shadow: 0 0 10px rgba(96, 169, 229, 0.2); }
-.bar-text { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 7px; color: rgba(255, 255, 255, 0.7); text-shadow: 0 1px 2px #000; letter-spacing: 0.02em; }
+.bar-text { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 8px; color: #fff; text-shadow: 0 1px 1px #000, 0 0 4px #000, 0 0 2px rgba(0,0,0,0.9); letter-spacing: 0.04em; }
 .bar-chips { position: absolute; inset: 0; display: flex; }
 .bar-chips i { flex: 1; border-right: 1px solid rgba(0,0,0,0.3); }
 .boon-strip { display: flex; gap: 3px; margin-top: 5px; min-height: 12px; flex-wrap: wrap; }
@@ -535,7 +536,7 @@ button:focus-visible {
 .contract-title { color: var(--parchment-dim); font-family: var(--serif); font-size: 11px; letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .contract-progress { font-family: var(--mono); font-size: 8px; color: var(--gold); white-space: nowrap; }
 
-.toast-stack { position: absolute; top: calc(105px + var(--safe-top)); right: 20px; display: flex; flex-direction: column; gap: 7px; align-items: flex-end; width: min(320px, 70vw); }
+.toast-stack { position: absolute; top: calc(150px + var(--safe-top)); right: 20px; display: flex; flex-direction: column; gap: 7px; align-items: flex-end; width: min(320px, 70vw); }
 .toast {
   padding: 8px 12px;
   background: linear-gradient(100deg, rgba(15, 11, 21, 0.94), rgba(32, 23, 30, 0.82));
@@ -998,7 +999,11 @@ button:focus-visible {
   border: 1px solid var(--line);
   backdrop-filter: blur(12px);
   box-shadow: 0 20px 50px rgba(0,0,0,0.42);
-  animation: screenIn 400ms ease both;
+  animation: tutorialIn 400ms ease both;
+}
+@keyframes tutorialIn {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 .tutorial-top { display: flex; justify-content: space-between; align-items: center; font-size: 7px; letter-spacing: 0.22em; color: var(--gold); }
 .tutorial-top button { color: var(--muted); font-size: 17px; line-height: 1; padding: 0 3px; }
