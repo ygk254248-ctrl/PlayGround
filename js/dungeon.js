@@ -122,6 +122,8 @@ export function generateFloor(floor, rand = Math.random) {
   const theme = themeForFloor(floor);
   const rooms = {};
   const start = addRoom(rooms, 3, 3, null, null);
+  start.type = 'start';
+  start.name = 'The Threshold';
   const targetCount = BOSS_FLOORS.includes(floor)
     ? (floor === 12 ? 6 : 5)
     : 7 + Math.floor(rand() * 3);
