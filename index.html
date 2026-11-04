@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#070b0d">
+  <title>ASHEN VEIL — 잿빛 장막</title>
+  <meta name="description" content="A hand-drawn souls-like action game beneath a dead moon.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23070b0d'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236f6655'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23d59a57'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="game" width="1280" height="720" aria-label="Ashen Veil game"></canvas>
+
+    <button id="sound-toggle" class="chrome-button" aria-label="Toggle sound" title="Toggle sound">
+      <span class="sound-on">SOUND ON</span><span class="sound-off">SOUND OFF</span>
+    </button>
+    <button id="pause-button" class="chrome-button pause-button" aria-label="Pause">II</button>
+
+    <section id="title-screen" class="screen title-screen">
+      <div class="title-shade"></div>
+      <div class="title-content">
+        <div class="title-kicker"><span></span> VAEL · YEAR 1000 OF ASH <span></span></div>
+        <h1 class="game-title">ASHEN<br><em>VEIL</em></h1>
+        <div class="title-ko">잿빛 장막</div>
+        <p class="title-copy">The kingdom has burned for a thousand years.<br>
+          Beneath a dead moon, the Hollow King still wears his crown.</p>
+        <p class="title-copy ko-copy">천 년 동안 불탄 왕국. 죽은 달 아래, 공허한 왕은 아직 왕관을 쓰고 있다.</p>
+        <button id="start-button" class="primary-button"><span>ENTER THE ASH</span><small>잿더미 속으로</small></button>
+        <div class="title-controls">
+          <span><b>A D</b> MOVE</span><span><b>W</b> JUMP</span><span><b>SPACE</b> ROLL</span>
+          <span><b>J</b> STRIKE</span><span><b>K</b> HEAVY</span><span><b>S</b> GUARD</span>
+          <span><b>Q</b> ESTUS</span><span><b>E</b> INTERACT</span>
+        </div>
+        <p class="headphone-note">HEADPHONES RECOMMENDED · 키보드 / 터치 지원</p>
+      </div>
+      <div class="title-footer">AN ORIGINAL PROCEDURAL ACTION GAME <span>◆</span> HTML5 CANVAS</div>
+    </section>
+
+    <div id="boss-intro" class="boss-intro" aria-hidden="true">
+      <div class="boss-intro-rule"></div>
+      <div class="boss-intro-name">THE HOLLOW KING</div>
+      <div class="boss-intro-sub">공허한 왕 · LORD OF THE ASHEN THRONE</div>
+      <div class="boss-intro-rule"></div>
+    </div>
+
+    <section id="bonfire-screen" class="screen modal-screen" hidden>
+      <div class="modal bonfire-modal">
+        <div class="modal-eyebrow">THE FLAME REMEMBERS</div>
+        <h2>BONFIRE</h2>
+        <p class="modal-copy">The embers pull at your wounds. The dead will rise again.</p>
+        <div class="modal-stat"><span>SOULS</span><strong id="bonfire-souls">0</strong></div>
+        <button id="rest-button" class="menu-button">
+          <span>REST</span><small>Restore HP, stamina and estus · revive enemies</small>
+        </button>
+        <button id="level-button" class="menu-button">
+          <span>LEVEL UP</span><small id="level-copy">Increase vitality and strength</small>
+        </button>
+        <button id="leave-bonfire" class="menu-button quiet"><span>LEAVE</span><small>Return to the ash</small></button>
+      </div>
+    </section>
+
+    <section id="death-screen" class="screen modal-screen death-screen" hidden>
+      <div class="death-inner">
+        <div class="death-title">YOU DIED</div>
+        <div class="death-sub">당신은 죽었습니다</div>
+        <p id="death-copy">The ash claims all.</p>
+        <button id="rise-button" class="primary-button danger"><span>RISE AGAIN</span><small>다시 일어나라</small></button>
+      </div>
+    </section>
+
+    <section id="victory-screen" class="screen modal-screen victory-screen" hidden>
+      <div class="victory-inner">
+        <div class="modal-eyebrow">THE CROWN IS SILENT</div>
+        <div class="victory-title">LORD OF ASH<br><em>FELLED</em></div>
+        <div class="victory-sub">재의 군주가 쓰러졌다</div>
+        <p>The flame gutters. For the first time in a thousand years,<br>the dead moon closes its eye.</p>
+        <div class="victory-stats">
+          <div><span>SOULS CLAIMED</span><strong id="victory-souls">0</strong></div>
+          <div><span>DEATHS</span><strong id="victory-deaths">0</strong></div>
+          <div><span>TIME</span><strong id="victory-time">0:00</strong></div>
+        </div>
+        <button id="again-button" class="primary-button"><span>BEGIN AGAIN</span><small>처음부터</small></button>
+      </div>
+    </section>
+
+    <section id="pause-screen" class="screen modal-screen pause-screen" hidden>
+      <div class="modal pause-modal">
+        <div class="modal-eyebrow">THE WORLD WAITS</div>
+        <h2>PAUSED</h2>
+        <button id="resume-button" class="menu-button"><span>RESUME</span><small>Continue your pilgrimage</small></button>
+        <button id="restart-button" class="menu-button quiet"><span>ABANDON RUN</span><small>Return to the title</small></button>
+      </div>
+    </section>
+
+    <div id="touch-controls" class="touch-controls" aria-hidden="true">
+      <div id="stick-zone" class="stick-zone">
+        <div class="stick-ring"><div id="stick-knob" class="stick-knob"></div></div>
+      </div>
+      <div class="action-pad">
+        <button class="touch-btn btn-jump" data-action="jump"><span>JUMP</span><i>W</i></button>
+        <button class="touch-btn btn-block" data-action="block"><span>GUARD</span><i>S</i></button>
+        <button class="touch-btn btn-heal" data-action="heal"><span>ESTUS</span><i>Q</i></button>
+        <button class="touch-btn btn-roll" data-action="dodge"><span>ROLL</span><i>⤿</i></button>
+        <button class="touch-btn btn-heavy" data-action="heavy"><span>HEAVY</span><i>K</i></button>
+        <button class="touch-btn btn-attack" data-action="attack"><span>STRIKE</span><i>J</i></button>
+      </div>
+      <button id="touch-interact" class="touch-interact" hidden>INTERACT</button>
+    </div>
+
+    <div id="rotate-hint" class="rotate-hint">
+      <div class="rotate-icon">↻</div>
+      <div>ROTATE YOUR DEVICE</div>
+      <small>가로 화면으로 돌려주세요</small>
+    </div>
+
+    <div id="loading" class="loading"><span>KINDLING THE FLAME</span></div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
