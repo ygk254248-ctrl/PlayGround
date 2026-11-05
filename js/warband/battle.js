@@ -105,6 +105,9 @@ export class Battle {
     const isBoss = this.encounter?.encounterType === 'boss';
     const isElite = this.encounter?.encounterType === 'elite';
     const bossId = this.encounter?.bossId || (this.floor === 5 ? 'crown' : 'warden');
+    // Endless floors below the crown (6+) reuse floor-5 strength so the descent
+    // stays beatable while XP and gold keep growing with real depth.
+    const ef = Math.min(this.floor, 5);
     const list = [];
     if (isBoss) {
       list.push({ id: bossId, boss: true });
@@ -118,8 +121,8 @@ export class Battle {
       const template = ENEMIES[entry.id] || ENEMIES.wisp;
       counts[entry.id] = (counts[entry.id] || 0) + 1;
       const level = Math.max(1, this.floor + (entry.boss ? 2 : 0) + (isElite ? 1 : 0));
-      const scale = 1 + (this.floor - 1) * 0.12 + (isElite ? 0.18 : 0);
-      const maxHp = Math.round((52 + this.floor * 17) * template.hp * (entry.boss ? 1 : 1) * scale);
+      const scale = 1 + (ef - 1) * 0.12 + (isElite ? 0.18 : 0);
+      const maxHp = Math.round((52 + ef * 17) * template.hp * (entry.boss ? 1 : 1) * scale);
       const row = entry.boss ? 'front' : index < 3 ? 'front' : 'back';
       const unit = {
         uid: `enemy_${index}_${entry.id}`,
@@ -138,13 +141,13 @@ export class Battle {
         hp: maxHp,
         maxAether: 999,
         aether: 999,
-        power: Math.round((17 + this.floor * 6.5) * template.power * scale),
-        spell: Math.round((17 + this.floor * 6.5) * template.spell * scale),
-        defense: Math.round((4 + this.floor * 3.2) * template.defense * scale),
-        resolve: Math.round((4 + this.floor * 2.8) * template.resolve * scale),
-        speed: Math.round((11 + this.floor * 1.6) * template.speed),
-        crit: Math.round((4 + this.floor * 0.5) * 10) / 10,
-        evade: Math.round((2 + this.floor * 0.35) * 10) / 10,
+        power: Math.round((17 + ef * 6.5) * template.power * scale),
+        spell: Math.round((17 + ef * 6.5) * template.spell * scale),
+        defense: Math.round((4 + ef * 3.2) * template.defense * scale),
+        resolve: Math.round((4 + ef * 2.8) * template.resolve * scale),
+        speed: Math.round((11 + ef * 1.6) * template.speed),
+        crit: Math.round((4 + ef * 0.5) * 10) / 10,
+        evade: Math.round((2 + ef * 0.35) * 10) / 10,
         attackKind: template.spell > template.power ? 'magic' : 'physical',
         attackReach: template.spell > template.power ? 'any' : 'front',
         ability: template.ability || null,
