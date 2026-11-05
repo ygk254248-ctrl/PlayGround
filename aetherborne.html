@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#08070c">
+  <meta name="description" content="Aetherborne: The Hollow Crown — a hand-crafted roguelite action RPG about climbing a haunted fantasy tower.">
+  <title>Aetherborne · The Hollow Crown</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="game-root">
+    <canvas id="game-canvas" aria-label="Aetherborne game area"></canvas>
+    <div id="world-fx" aria-hidden="true">
+      <div id="vignette"></div>
+      <div id="damage-flash"></div>
+    </div>
+
+    <div id="hud" class="hidden" aria-live="polite">
+      <div class="hud-top">
+        <div class="hunter-hud">
+          <div class="rank-seal" id="hud-rank">D</div>
+          <div class="hunter-vitals">
+            <div class="hunter-line">
+              <span class="hunter-name" id="hud-hunter-name">Lyra Vane</span>
+              <span class="hunter-tag">HUNTER LICENSE</span>
+            </div>
+            <div class="bar hp-bar" title="Health">
+              <div class="bar-fill" id="hp-fill"></div>
+              <div class="bar-chips" id="hp-chips"></div>
+              <span class="bar-text" id="hp-text">100 / 100</span>
+            </div>
+            <div class="bar aether-bar" title="Aether">
+              <div class="bar-fill" id="aether-fill"></div>
+              <span class="bar-text" id="aether-text">60 / 60</span>
+            </div>
+            <div class="boon-strip" id="boon-strip"></div>
+          </div>
+        </div>
+
+        <div class="floor-hud">
+          <div class="floor-kicker">ASCENSION</div>
+          <div class="floor-number" id="floor-number">FLOOR 01</div>
+          <div class="floor-theme" id="floor-theme">The Cinder Vaults</div>
+          <div class="seal-track"><div class="seal-fill" id="seal-fill"></div></div>
+          <div class="seal-text" id="seal-text">SEAL 0 / 3</div>
+        </div>
+
+        <div class="hud-right">
+          <div class="shard-balance"><span class="shard-glyph">✧</span><span id="shard-count">0</span><span class="shard-label">SHARDS</span></div>
+          <div class="map-wrap">
+            <canvas id="minimap" width="164" height="128" aria-label="Floor map"></canvas>
+            <div class="map-room-name" id="map-room-name">Threshold</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="boss-hud" class="boss-hud hidden">
+        <div class="boss-identity">
+          <span class="boss-kicker">GUARDIAN</span>
+          <span class="boss-name" id="boss-name">The Ashen Warden</span>
+        </div>
+        <div class="boss-bar"><div id="boss-fill"></div><div id="boss-delayed"></div></div>
+        <div class="boss-phase" id="boss-phase">PHASE I</div>
+      </div>
+
+      <div class="contract-chip" id="contract-chip">
+        <span class="contract-mark">✦</span>
+        <div>
+          <span class="contract-label">ACTIVE CONTRACT</span>
+          <span class="contract-title" id="contract-title">Cull the Hollow</span>
+        </div>
+        <span class="contract-progress" id="contract-progress">0 / 12</span>
+      </div>
+
+      <div class="toast-stack" id="toasts"></div>
+
+      <div class="interact-prompt hidden" id="interact-prompt">
+        <span class="keycap" id="interact-key">E</span>
+        <span id="interact-text">Open</span>
+      </div>
+
+      <div class="ability-bar" id="ability-bar">
+        <div class="ability" data-ability="attack"><span class="ability-icon">⚔</span><span class="ability-name">STRIKE</span><span class="ability-key">LMB</span></div>
+        <div class="ability" data-ability="dash"><span class="ability-icon">➤</span><span class="ability-name">DASH</span><span class="ability-key">SPACE</span><div class="cooldown-mask" id="dash-cd"></div></div>
+        <div class="ability" data-ability="lance"><span class="ability-icon">✦</span><span class="ability-name">LANCE</span><span class="ability-key">RMB</span><div class="cooldown-mask" id="lance-cd"></div></div>
+        <div class="ability" data-ability="nova"><span class="ability-icon">☄</span><span class="ability-name">NOVA</span><span class="ability-key">Q</span><div class="cooldown-mask" id="nova-cd"></div></div>
+        <div class="ability" data-ability="interact"><span class="ability-icon">◈</span><span class="ability-name">USE</span><span class="ability-key">E</span></div>
+      </div>
+
+      <button class="icon-button pause-button" data-action="pause" aria-label="Pause game">Ⅱ</button>
+
+      <div class="touch-controls" id="touch-controls" aria-hidden="false">
+        <div class="joystick-zone" id="joystick-zone">
+          <div class="joystick-ring"><div class="joystick-knob" id="joystick-knob"></div></div>
+          <span class="joystick-hint">MOVE</span>
+        </div>
+        <div class="touch-buttons">
+          <button class="touch-btn touch-nova" data-touch="nova" aria-label="Aether Nova">☄</button>
+          <button class="touch-btn touch-lance" data-touch="lance" aria-label="Aether Lance">✦</button>
+          <button class="touch-btn touch-dash" data-touch="dash" aria-label="Dash">➤</button>
+          <button class="touch-btn touch-attack" data-touch="attack" aria-label="Attack">⚔</button>
+          <button class="touch-btn touch-interact" data-touch="interact" aria-label="Interact">◈</button>
+        </div>
+      </div>
+    </div>
+
+    <section id="title-screen" class="screen title-screen">
+      <div class="title-grain" aria-hidden="true"></div>
+      <header class="title-topbar">
+        <div class="brand-mark"><span>✧</span> OMGITHUB ORIGINAL</div>
+        <div class="title-tools">
+          <button class="icon-button" data-action="toggle-sound" id="sound-toggle-title" aria-label="Toggle sound">◖))</button>
+        </div>
+      </header>
+
+      <div class="title-layout">
+        <div class="title-copy">
+          <p class="eyebrow">A ROGUELITE ACTION RPG</p>
+          <h1 class="game-title">AETHER<span>BORNE</span></h1>
+          <div class="title-rule"><span></span><em>THE HOLLOW CROWN</em><span></span></div>
+          <p class="title-blurb">The tower has swallowed a thousand hunters. Its crown is still hungry. Climb as Lyra Vane, forge a hunter’s license, and carve a path through floors that never repeat.</p>
+          <div class="title-actions">
+            <button class="primary-button" data-action="quickplay">Play</button>
+            <button class="secondary-button" data-action="open-hub">Hunter’s Sanctum</button>
+          </div>
+          <p class="continue-line" id="continue-line">Begin a new ascent at Floor 1.</p>
+          <div class="control-hints">
+            <span><b>WASD</b> move</span><span><b>MOUSE</b> aim &amp; strike</span><span><b>SPACE</b> dash</span><span><b>Q</b> nova</span>
+          </div>
+        </div>
+        <div class="title-scroll">
+          <div class="license-preview" id="title-license">
+            <div class="license-topline"><span>HUNTER’S LICENSE</span><span>HV-0713</span></div>
+            <div class="license-body">
+              <div class="license-seal" id="title-rank-seal">D</div>
+              <div>
+                <h2>LYRA VANE</h2>
+                <p>Last licensed hunter of the Low Ward.</p>
+              </div>
+            </div>
+            <div class="license-stats">
+              <span><b id="title-checkpoint">01</b> checkpoint</span>
+              <span><b id="title-runs">0</b> ascents</span>
+              <span><b id="title-bosses">0</b> guardians</span>
+            </div>
+            <div class="license-rune">✧</div>
+          </div>
+          <div class="title-aside">“There is no summit. Only the next door.”<span>— Wayfarer’s Creed</span></div>
+        </div>
+      </div>
+
+      <footer class="title-footer">
+        <span>MOUSE + KEYBOARD · TOUCH SUPPORTED</span>
+        <span>ESC TO PAUSE</span>
+        <span>v1.0 · THE FIRST ASCENT</span>
+      </footer>
+    </section>
+
+    <section id="hub-screen" class="screen hub-screen hidden" aria-label="Hunter's Sanctum">
+      <div class="hub-shell">
+        <header class="hub-header">
+          <div class="hub-brand">
+            <span class="brand-glyph">✧</span>
+            <div><h2>THE WAYFARER’S REST</h2><p>Sanctum above the first seal</p></div>
+          </div>
+          <div class="hub-currency"><span>✧</span><b id="hub-shards">0</b><em>AETHER SHARDS</em></div>
+          <button class="icon-button" data-action="close-hub" aria-label="Close sanctum">×</button>
+        </header>
+
+        <div class="hub-layout">
+          <aside class="hunter-card" id="hunter-card">
+            <div class="hunter-portrait">
+              <div class="portrait-moon"></div>
+              <div class="portrait-silhouette"><i></i><b></b><span></span></div>
+              <div class="portrait-rank" id="hub-rank-seal">D</div>
+            </div>
+            <div class="hunter-card-body">
+              <span class="card-kicker">LICENSED HUNTER</span>
+              <h3>Lyra Vane</h3>
+              <p id="hub-rank-title">Novice Hunter</p>
+              <div class="xp-line"><div id="hub-xp-fill"></div></div>
+              <div class="xp-labels"><span id="hub-xp-label">0 / 250 XP</span><span id="hub-rank-next">NEXT: C</span></div>
+              <div class="hunter-mini-stats">
+                <span><b id="hub-best">1</b>BEST FLOOR</span>
+                <span><b id="hub-kills">0</b>DENIZENS</span>
+                <span><b id="hub-bosses">0</b>GUARDIANS</span>
+              </div>
+            </div>
+          </aside>
+
+          <nav class="hub-nav" aria-label="Sanctum sections">
+            <button data-hub-tab="descent" class="active">Descend</button>
+            <button data-hub-tab="license">License</button>
+            <button data-hub-tab="forge">Forge</button>
+            <button data-hub-tab="contracts">Contracts</button>
+            <button data-hub-tab="codex">Field Manual</button>
+          </nav>
+
+          <main class="hub-main" id="hub-content"></main>
+        </div>
+      </div>
+    </section>
+
+    <section id="boon-screen" class="screen overlay-screen hidden" aria-label="Choose an Aether Mark">
+      <div class="boon-shell">
+        <p class="eyebrow">THE TOWER OFFERS</p>
+        <h2>Choose an Aether Mark</h2>
+        <p class="boon-sub">Marks last until death. Stack them to define this ascent.</p>
+        <div class="boon-cards" id="boon-cards"></div>
+        <p class="boon-foot">AETHER MARK <span id="boon-count-label">I</span> · CHOOSE ONE</p>
+      </div>
+    </section>
+
+    <section id="pause-screen" class="screen overlay-screen hidden" aria-label="Paused">
+      <div class="pause-shell">
+        <p class="eyebrow">THE TOWER WAITS</p>
+        <h2>Ascent Paused</h2>
+        <div class="pause-stats" id="pause-stats"></div>
+        <div class="pause-settings">
+          <button class="setting-row" data-action="toggle-sound"><span>Sound effects</span><b id="setting-sound">ON</b></button>
+          <button class="setting-row" data-action="toggle-music"><span>Ambient score</span><b id="setting-music">ON</b></button>
+          <button class="setting-row" data-action="toggle-shake"><span>Screen shake</span><b id="setting-shake">ON</b></button>
+        </div>
+        <div class="pause-actions">
+          <button class="primary-button" data-action="resume">Resume</button>
+          <button class="secondary-button" data-action="abandon">Return to Sanctum</button>
+        </div>
+        <p class="pause-note">Returning to the Sanctum banks your shards and contract progress, but ends this ascent.</p>
+      </div>
+    </section>
+
+    <section id="result-screen" class="screen overlay-screen hidden" aria-label="Run result">
+      <div class="result-shell">
+        <p class="eyebrow" id="result-kicker">THE ASCENT ENDS</p>
+        <h2 id="result-title">Fallen at Floor 3</h2>
+        <p class="result-sub" id="result-sub">The tower keeps what it kills.</p>
+        <div class="result-grid" id="result-grid"></div>
+        <div class="result-columns" id="result-columns"></div>
+        <div class="result-actions">
+          <button class="primary-button" data-action="retry">Ascend Again</button>
+          <button class="secondary-button" data-action="open-hub">Return to Sanctum</button>
+        </div>
+      </div>
+    </section>
+
+    <div id="tutorial" class="tutorial-card hidden">
+      <div class="tutorial-top"><span>FIELD NOTES</span><button data-action="dismiss-tutorial" aria-label="Dismiss">×</button></div>
+      <h3>Survive the first hall</h3>
+      <div class="tutorial-grid">
+        <div><b>WASD</b><span>Move through the hall.</span></div>
+        <div><b>LMB</b><span>Strike with your blade. Hold to combo.</span></div>
+        <div><b>SPACE</b><span>Dash through danger. Brief invulnerability.</span></div>
+        <div><b>RMB / K</b><span>Aether Lance: a piercing ranged bolt.</span></div>
+        <div><b>Q</b><span>Aether Nova: a close-range blast.</span></div>
+        <div><b>E</b><span>Open hoards, shrines, and stair gates.</span></div>
+      </div>
+    </div>
+
+    <div id="loading-screen">
+      <div class="loading-mark">✧</div>
+      <p>LIGHTING THE LANTERNS</p>
+    </div>
+  </div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
