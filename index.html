@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#150a24" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Azure Blade — Tower of the Fallen King</title>
+<meta name="description" content="A 2D side-scrolling action game inspired by Tower Hunter: Erza's Trial. Play as Airi, an azure-blade swordswoman, climb the cursed tower of the Fallen King, and slay Ghalus the Gilded Knight." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='88'>🗡️</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Alegreya+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ══════════ GAME CANVAS ══════════ -->
+<div id="stage">
+  <canvas id="game" aria-label="Azure Blade gameplay canvas"></canvas>
+
+  <!-- Touch controls (shown on touch devices only) -->
+  <div id="touch" aria-hidden="true">
+    <div class="tstick" id="t-leftzone">
+      <button class="tbtn tbtn-move" id="t-left"  aria-label="Move left">◀</button>
+      <button class="tbtn tbtn-move" id="t-right" aria-label="Move right">▶</button>
+    </div>
+    <div class="tactions">
+      <button class="tbtn tbtn-small" id="t-dash" aria-label="Dash">DASH</button>
+      <button class="tbtn tbtn-small" id="t-roll" aria-label="Dodge roll">ROLL</button>
+      <button class="tbtn tbtn-mid"   id="t-heavy" aria-label="Heavy attack">HVY</button>
+      <button class="tbtn tbtn-big"   id="t-atk"  aria-label="Light attack">ATK</button>
+      <button class="tbtn tbtn-big"   id="t-jump" aria-label="Jump">JUMP</button>
+    </div>
+  </div>
+
+  <!-- Pause button (always available in-game) -->
+  <button id="pauseBtn" aria-label="Pause game" title="Pause (Esc)">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+  </button>
+</div>
+
+<!-- ══════════ TITLE SCREEN ══════════ -->
+<div id="titleScreen" class="overlay" role="dialog" aria-label="Azure Blade title screen">
+  <div class="title-art" aria-hidden="true">
+    <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#1b1035"/><stop offset=".38" stop-color="#4a2358"/>
+          <stop offset=".66" stop-color="#8a3d5e"/><stop offset=".85" stop-color="#c65f4e"/>
+          <stop offset="1" stop-color="#f2a35e"/>
+        </linearGradient>
+        <linearGradient id="tower" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#241533"/><stop offset="1" stop-color="#120a1e"/>
+        </linearGradient>
+        <radialGradient id="moon" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#ffe9c4"/><stop offset=".6" stop-color="#f5c87e"/><stop offset="1" stop-color="#f5c87e" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="blade" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#bff3ff"/><stop offset=".5" stop-color="#4fd2ff"/><stop offset="1" stop-color="#1288c4"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="600" fill="url(#sky)"/>
+      <circle cx="575" cy="150" r="120" fill="url(#moon)" opacity=".9"/>
+      <circle cx="575" cy="150" r="52" fill="#ffe9c4"/>
+      <!-- distant silhouettes -->
+      <path fill="#2c1a3f" opacity=".9" d="M0 430 L70 380 L120 430 Z M110 430 L185 350 L255 430 Z M640 430 L705 385 L770 430 Z"/>
+      <path fill="#241430" d="M0 470 H800 V600 H0 Z"/>
+      <!-- the great tower -->
+      <g fill="url(#tower)">
+        <path d="M310 470 L330 180 L350 150 L360 96 L372 150 L392 180 L412 470 Z"/>
+        <rect x="268" y="470" width="186" height="130"/>
+        <rect x="238" y="540" width="246" height="60"/>
+      </g>
+      <!-- glowing windows -->
+      <g fill="#ffca6a">
+        <rect x="338" y="230" width="14" height="20" rx="6" opacity=".95"/>
+        <rect x="352" y="320" width="14" height="20" rx="6" opacity=".8"/>
+        <rect x="330" y="395" width="14" height="20" rx="6" opacity=".9"/>
+        <rect x="380" y="360" width="12" height="18" rx="6" opacity=".7"/>
+      </g>
+      <!-- floating embers -->
+      <g fill="#ffb35c">
+        <circle cx="250" cy="300" r="2.6" opacity=".9"/><circle cx="430" cy="260" r="2" opacity=".8"/>
+        <circle cx="300" cy="180" r="1.8" opacity=".7"/><circle cx="480" cy="360" r="2.4" opacity=".9"/>
+        <circle cx="220" cy="400" r="2" opacity=".6"/><circle cx="520" cy="220" r="1.6" opacity=".8"/>
+      </g>
+      <!-- azure blade planted in the rock -->
+      <g transform="translate(575 470) rotate(18)">
+        <path d="M0 -132 L9 -88 L9 0 L-9 0 L-9 -88 Z" fill="url(#blade)" stroke="#0b3a52" stroke-width="2"/>
+        <rect x="-16" y="0" width="32" height="8" rx="2" fill="#d8b25c" stroke="#6b4d1a"/>
+        <rect x="-5" y="8" width="10" height="34" rx="3" fill="#3a2a1a"/>
+        <circle cx="0" cy="46" r="6" fill="#d8b25c"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="title-content">
+    <p class="kicker">An anime action epic · inspired by Tower Hunter</p>
+    <h1 class="logo"><span>AZURE</span> BLADE</h1>
+    <p class="tagline">Tower of the Fallen King</p>
+    <p class="story">The cursed tower has swallowed every knight sent against it. You are <strong>Airi</strong>, last swordswoman of the Azure Order — climb the spire, master the blade, and bring the Gilded King to his knees.</p>
+
+    <div class="title-buttons">
+      <button id="startBtn" class="btn btn-primary">⚔&ensp;Begin the Ascent</button>
+      <button id="howToBtn" class="btn btn-ghost">How to Play</button>
+    </div>
+
+    <div id="bestLine" class="best-line" aria-live="polite"></div>
+    <p class="hint-landscape">↻ Best played in landscape on phones</p>
+  </div>
+</div>
+
+<!-- ══════════ HOW TO PLAY ══════════ -->
+<div id="howToScreen" class="overlay hidden" role="dialog" aria-label="How to play">
+  <div class="panel">
+    <h2>How to Play</h2>
+    <div class="howto-grid">
+      <div><h3>Move &amp; Climb</h3>
+        <ul><li><kbd>A</kbd>/<kbd>D</kbd> or <kbd>←</kbd><kbd>→</kbd> — run</li>
+          <li><kbd>Space</kbd> / <kbd>W</kbd> / <kbd>↑</kbd> — jump</li>
+          <li>Jump again mid-air — <strong>double jump</strong></li>
+          <li><kbd>↓</kbd> — <strong>dodge roll</strong> (invincible while rolling)</li>
+          <li><kbd>Shift</kbd> / <kbd>C</kbd> — <strong>dash</strong></li>
+          <li>Hold toward a wall in mid-air, then jump — <strong>wall jump</strong></li>
+        </ul></div>
+      <div><h3>Strike</h3>
+        <ul><li><kbd>J</kbd> / <kbd>Z</kbd> — light attack (chain a 3-hit combo)</li>
+          <li><kbd>K</kbd> / <kbd>X</kbd> — heavy attack (huge knockback)</li>
+          <li>Attacks work in the air too</li>
+          <li><kbd>Esc</kbd> / <kbd>P</kbd> — pause · <kbd>M</kbd> — mute</li>
+        </ul></div>
+      <div><h3>The Tower</h3>
+        <ul><li>Follow the torchlit ledges upward — the boss waits at the summit</li>
+          <li>Brave the slimes, goblins and storm-bats; spikes and fire jets bite</li>
+          <li>Look for <em>gilded archways</em> — hidden treasure hides behind them</li>
+          <li>Braziers save your progress. Fall, and you rise again there</li>
+        </ul></div>
+    </div>
+    <button id="howToClose" class="btn btn-primary">Got it</button>
+  </div>
+</div>
+
+<!-- ══════════ PAUSE ══════════ -->
+<div id="pauseScreen" class="overlay hidden" role="dialog" aria-label="Paused">
+  <div class="panel panel-narrow">
+    <h2>Paused</h2>
+    <p class="panel-sub">The tower waits for no one… except you, apparently.</p>
+    <div class="col-buttons">
+      <button id="resumeBtn" class="btn btn-primary">Resume</button>
+      <button id="restartCheckpointBtn" class="btn btn-ghost">Restart from Brazier</button>
+      <button id="quitToTitleBtn" class="btn btn-ghost">Abandon Run (Title)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ GAME OVER ══════════ -->
+<div id="gameOverScreen" class="overlay hidden" role="dialog" aria-label="Game over">
+  <div class="panel panel-narrow">
+    <h2 class="doom">The Tower Claims You</h2>
+    <p class="panel-sub" id="gameOverDetail">Airi falls… but the Azure Order does not kneel.</p>
+    <div class="col-buttons">
+      <button id="retryBtn" class="btn btn-primary">Rise Again (from Brazier)</button>
+      <button id="gameOverTitleBtn" class="btn btn-ghost">Return to Title</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ VICTORY ══════════ -->
+<div id="victoryScreen" class="overlay hidden" role="dialog" aria-label="Victory">
+  <div class="panel panel-narrow">
+    <p class="kicker gold">The Gilded King is broken</p>
+    <h2 class="triumph">SUNSET OVER THE SPIRE</h2>
+    <div id="victoryStats" class="stats"></div>
+    <div class="col-buttons">
+      <button id="playAgainBtn" class="btn btn-primary">Climb Again</button>
+      <button id="victoryTitleBtn" class="btn btn-ghost">Return to Title</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
