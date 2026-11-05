@@ -1097,8 +1097,8 @@ body.touch .interact-prompt { bottom: calc(188px + var(--safe-bottom)); }
   .title-screen { padding-left: 24px; padding-right: 24px; }
   .title-layout { grid-template-columns: 1fr; align-items: center; padding-top: 30px; }
   .title-scroll { display: none; }
-  .title-copy { max-width: 100%; }
-  .game-title { white-space: normal; font-size: clamp(3.4rem, 15vw, 6rem); line-height: 0.9; }
+  .title-copy { max-width: 100%; min-width: 0; }
+  .game-title { white-space: normal; font-size: clamp(2.3rem, 11vw, 5rem); line-height: 0.9; letter-spacing: 0.03em; }
   .title-rule em { font-size: 10px; letter-spacing: 0.3em; }
   .title-blurb { font-size: 14px; max-width: 480px; }
   .title-footer span:nth-child(2) { display: none; }
@@ -1141,9 +1141,9 @@ body.touch .interact-prompt { bottom: calc(188px + var(--safe-bottom)); }
   .title-topbar { gap: 10px; }
   .brand-mark { font-size: 7px; letter-spacing: 0.18em; }
   .eyebrow { font-size: 8px; letter-spacing: 0.28em; }
-  .game-title { font-size: clamp(3.05rem, 16.5vw, 4.7rem); }
+  .game-title { font-size: clamp(1.9rem, 11vw, 3rem); }
   .title-rule { margin: 17px 0 15px; }
-  .title-blurb { font-size: 13px; line-height: 1.65; margin-bottom: 22px; }
+  .title-blurb { font-size: 13px; line-height: 1.65; margin-bottom: 22px; max-width: 100%; }
   .title-actions { flex-direction: column; align-items: stretch; }
   .title-actions button { width: 100%; }
   .continue-line { font-size: 8px; }

@@ -1309,7 +1309,7 @@ h1, h2, h3, h4, p { margin: 0; }
 @media (max-width: 1080px) {
   .title-main { grid-template-columns: 1fr; gap: 28px; padding-top: 0; }
   .title-preview { display: none; }
-  .title-copy { max-width: 900px; }
+  .title-copy { max-width: 900px; min-width: 0; }
   .create-layout { grid-template-columns: minmax(0, 1fr) minmax(290px, 350px); }
   .battlefield { grid-template-columns: minmax(0, 1fr) 90px minmax(0, 1fr); }
   .battle-bottom { grid-template-columns: minmax(150px, 0.7fr) minmax(0, 1.6fr); }
@@ -1321,7 +1321,7 @@ h1, h2, h3, h4, p { margin: 0; }
   .screen { overflow-y: auto; }
   .title-top { padding: 16px 18px; }
   .title-main { padding: 0 20px 18px; }
-  .game-title { font-size: clamp(3.2rem, 15vw, 6rem); }
+  .game-title { font-size: clamp(2.4rem, 11vw, 5.2rem); }
   .title-blurb { font-size: 0.82rem; line-height: 1.75; }
   .title-actions { margin: 22px 0 18px; }
   .title-features { gap: 6px 16px; }
@@ -1399,7 +1399,7 @@ h1, h2, h3, h4, p { margin: 0; }
 @media (max-width: 480px) {
   .title-actions .btn { flex: 1 1 100%; }
   .title-features { font-size: 0.58rem; }
-  .game-title { font-size: clamp(2.8rem, 16vw, 4.4rem); }
+  .game-title { font-size: clamp(2.1rem, 11vw, 3.2rem); letter-spacing: 0.02em; }
   .create-grid { grid-template-columns: 1fr 1fr; }
   .option-card { min-height: 128px; }
   .option-glyph { flex-basis: 34px; width: 34px; height: 34px; font-size: 1rem; }
