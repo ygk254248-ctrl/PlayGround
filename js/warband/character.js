@@ -41,7 +41,7 @@ export function computeCharacter(character) {
   let evadeBonus = 0;
   if (race.trait.id === 'thick_hide') hpMult *= 1.12;
   if (race.trait.id === 'master_craft') defenseMult *= 1.1;
-  if (race.trait.id === 'verdant_step') speedBonus += 3;
+  if (race.trait.id === 'verdant_step') { speedBonus += 3; evadeBonus += 8; }
   if (race.trait.id === 'glide') { speedBonus += 6; critBonus += 5; }
   if (race.trait.id === 'fade') evadeBonus += 6;
 

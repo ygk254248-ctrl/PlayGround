@@ -485,7 +485,7 @@ export const CLASSES = [
     ability: {
       id: 'dawn_mend',
       name: '새벽의 치유',
-      desc: '모든 아군을 회복하고 약화 효과 하나를 정화한다. 언데드에게는 회복량이 20% 증가한다.',
+      desc: '모든 아군을 회복하고 약화 효과 하나를 정화한다.',
       cost: 12,
       cooldown: 3,
       target: 'allAllies',
